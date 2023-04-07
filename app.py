@@ -205,11 +205,8 @@ GPT4All:"""
     def format_message(self, message):
         # Look for a code block within the message
         pattern = re.compile(r"(```.*?```)", re.DOTALL)
-        match = pattern.search(message)
-
-        # If a code block is found, replace it with a <code> tag
-        if match:
-            code_block = match.group(1)
+        if match := pattern.search(message):
+            code_block = match[1]
             message = message.replace(code_block, f"<code>{code_block[3:-3]}</code>")
 
         # Return the formatted message
@@ -229,7 +226,7 @@ GPT4All:"""
         response_id = self.current_discussion.add_message("GPT4All",'') # first the content is empty, but we'll fill it at the end
         yield(json.dumps({'type':'input_message_infos','message':message, 'id':message_id, 'response_id':response_id}))
 
-        self.current_message = "User: "+message+"\nGPT4All:"
+        self.current_message = f"User: {message}" + "\nGPT4All:"
         self.prepare_query(self.current_message)
         chatbot_bindings.generate(self.current_message, n_predict=55, new_text_callback=self.new_text_callback, n_threads=8)
 
@@ -255,7 +252,7 @@ GPT4All:"""
             except Exception as ex:
                 print(ex)
                 msg = traceback.print_exc()
-                return "<b style='color:red;'>Exception :<b>"+str(ex)+"<br>"+traceback.format_exc()+"<br>Please report exception"
+                return f"<b style='color:red;'>Exception :<b>{str(ex)}<br>{traceback.format_exc()}<br>Please report exception"
             
     def discussions(self):
         try:
@@ -264,7 +261,7 @@ GPT4All:"""
         except Exception as ex:
             print(ex)
             msg = traceback.print_exc()
-            return "<b style='color:red;'>Exception :<b>"+str(ex)+"<br>"+traceback.format_exc()+"<br>Please report exception"
+            return f"<b style='color:red;'>Exception :<b>{str(ex)}<br>{traceback.format_exc()}<br>Please report exception"
 
     def rename(self):
         data = request.get_json()
@@ -298,7 +295,7 @@ GPT4All:"""
         except Exception as ex:
             print(ex)
             msg = traceback.print_exc()
-            return "<b style='color:red;'>Exception :<b>"+str(ex)+"<br>"+traceback.format_exc()+"<br>Please report exception"
+            return f"<b style='color:red;'>Exception :<b>{str(ex)}<br>{traceback.format_exc()}<br>Please report exception"
 
     def new_discussion(self):
         title = request.args.get('title')
